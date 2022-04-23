@@ -9,7 +9,14 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "@emotion/react": "^11.7.0",
+    "@emotion/styled": "^11.6.0",
+    "@mui/icons-material": "^5.2.0",
+    "@mui/material": "^5.2.2",
+    "emoji-picker-react": "^3.4.11",
+    "firebase": "^8.10.0",
+    "react-router-dom": "^6.0.2"
   },
   "scripts": {
     "start": "react-scripts start",
