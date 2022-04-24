@@ -7,12 +7,61 @@ import "./Sidebar.css"
 import UserProfile from "./UserProfile"
 import db from "../firebase"
 
-function Sidebar() {
+function Sidebar({ currentUser, signOut }) {
+  const [allUsers, setAllUsers] = useState([])
+  const [searchInput, setSearchInput] = useState("")
+  const [doctorList, setdoctorList] = useState([])
+  const [questionlist, setquestionlist] = useState([])
+  useEffect(() => {
+    const getAllUsers = async () => {
+      const data = await db.collection("users").onSnapshot((snapshot) => {
+        setAllUsers(
+          snapshot.docs.filter((doc) => doc.data().email !== currentUser?.email)
+        )
+      })
+    }
+
+    const getdoctors = async () => {
+      const data = await db
+        .collection("doctorlist")
+        .doc(currentUser.email)
+        .collection("list")
+        .onSnapshot((snapshot) => {
+          setdoctorList(snapshot.docs)
+        })
+    }
+
+    getAllUsers()
+    getdoctors()
+  }, [])
+  console.log(allUsers)
+
+  const searchedUser = allUsers.filter((user) => {
+    if (searchInput) {
+      if (
+        user.data().fullname.toLowerCase().includes(searchInput.toLowerCase())
+      ) {
+        return user
+      }
+    }
+  })
+
+  const searchItem = searchedUser.map((user) => {
+    return (
+      <UserProfile
+        name={user.data().fullname}
+        photoURL={user.data().photoURL}
+        key={user.id}
+        email={user.data().email}
+      />
+    )
+  })
+
   return (
     <div className="sidebar">
       <div className="sidebar-header">
         <div className="sidebar-header-img">
-          <img src="./user.png" alt="" />
+          <img src={currentUser?.photoURL} alt="" onClick={signOut} />
         </div>
         <div className="sidebar-header-btn">
           <TollIcon />
@@ -28,24 +77,24 @@ function Sidebar() {
             type="text"
             name="search"
             placeholder="Search..."
-            // value={searchInput}
-            // onChange={(e) => setSearchInput(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
           />
         </div>
       </div>
 
       <div className="sidebar-chat-list">
-        {/* {searchItem.length > 0
+        <UserProfile name={"hi"} lastMessage={"hi"} email={"hi"} />
+        {searchItem.length > 0
           ? searchItem
-          : friendList.map((friend) => (
+          : doctorList.map((doctor) => (
               <UserProfile
-                name={friend.data().fullname}
-                photoURL={friend.data().photoURL}
-                lastMessage={friend.data().lastMessage}
-                email={friend.data().email}
+                name={doctor.data().fullname}
+                photoURL={doctor.data().photoURL}
+                lastMessage={doctor.data().lastMessage}
+                email={doctor.data().email}
               />
-            ))} */}
-        <UserProfile />
+            ))}
       </div>
     </div>
   )
